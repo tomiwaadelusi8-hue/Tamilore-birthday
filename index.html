@@ -1,27 +1,22 @@
 ```html
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Tamilore's Birthday ❤️</title>
+<title>Tamilore ❤️</title>
 
 <style>
-
-/* BODY */
 
 body{
 margin:0;
 font-family:Segoe UI,Arial;
-text-align:center;
 color:white;
+text-align:center;
 overflow-x:hidden;
 background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
 }
 
-/* TORII ENTRANCE */
+/* TORII GATE ENTRANCE */
 
 #entrance{
 position:fixed;
@@ -40,7 +35,7 @@ z-index:9999;
 #entrance h1{
 background:rgba(0,0,0,.6);
 padding:20px 40px;
-border-radius:12px;
+border-radius:10px;
 color:#ffd700;
 }
 
@@ -49,9 +44,9 @@ padding:12px 25px;
 border:none;
 border-radius:10px;
 background:linear-gradient(45deg,#ff4d6d,#ffd700);
-font-weight:bold;
 cursor:pointer;
-margin:12px;
+margin:10px;
+font-weight:bold;
 }
 
 /* MOUNT FUJI */
@@ -63,7 +58,7 @@ left:50%;
 transform:translateX(-50%);
 width:100%;
 max-width:700px;
-height:240px;
+height:220px;
 background:linear-gradient(#1c1c1c,#000);
 clip-path:polygon(
 0% 100%,
@@ -75,7 +70,6 @@ clip-path:polygon(
 100% 100%
 );
 opacity:.85;
-z-index:0;
 }
 
 /* LANTERNS */
@@ -84,11 +78,11 @@ z-index:0;
 position:absolute;
 top:30px;
 font-size:40px;
-animation:swing 4s ease-in-out infinite;
+animation:swing 4s infinite ease-in-out;
 }
 
-.lantern.left{ left:40px; }
-.lantern.right{ right:40px; }
+.lantern.left{left:40px}
+.lantern.right{right:40px}
 
 @keyframes swing{
 0%{transform:rotate(-6deg)}
@@ -100,60 +94,35 @@ animation:swing 4s ease-in-out infinite;
 
 .container{
 margin-top:70px;
-position:relative;
-z-index:3;
 padding:10px;
+position:relative;
+z-index:2;
 }
 
-/* TITLES */
+h1{color:#ffd700}
 
-h1{
-color:#ffd700;
-text-shadow:0 0 10px gold;
-}
+h2{color:#ffc0cb}
 
-h2{
-color:#ffc0cb;
-}
-
-/* CAKE */
-
-.cake{
-font-size:90px;
-animation:bounce 2s infinite;
-}
-
-@keyframes bounce{
-0%,100%{transform:translateY(0)}
-50%{transform:translateY(-15px)}
-}
-
-/* LETTER CARD */
+/* LETTER */
 
 #letter{
 display:none;
-background:rgba(0,0,0,0.8);
+background:rgba(0,0,0,.8);
 padding:25px;
 margin:40px auto;
-border-radius:18px;
-width:60%;
+border-radius:20px;
 max-width:600px;
 line-height:1.7;
 text-align:left;
-position:relative;
-z-index:5;
 }
 
-#letterText{
-font-size:17px;
-}
+#letterText{font-size:17px}
 
 #finalMessage{
 display:none;
-text-align:center;
-font-size:28px;
+font-size:26px;
 color:#ffd700;
-margin-top:15px;
+text-align:center;
 }
 
 /* PETALS */
@@ -162,12 +131,26 @@ margin-top:15px;
 position:absolute;
 font-size:20px;
 animation:fall linear infinite;
-z-index:1;
 }
 
 @keyframes fall{
 0%{transform:translateY(-10vh)}
 100%{transform:translateY(110vh)}
+}
+
+/* PHOTOS */
+
+.photo{
+position:absolute;
+width:90px;
+border-radius:10px;
+box-shadow:0 0 15px black;
+animation:floatPhoto 10s infinite linear;
+}
+
+@keyframes floatPhoto{
+0%{transform:translateY(120vh)}
+100%{transform:translateY(-120vh)}
 }
 
 /* FIREWORK */
@@ -176,7 +159,6 @@ z-index:1;
 position:absolute;
 font-size:28px;
 animation:explode 1s ease-out forwards;
-z-index:1;
 }
 
 @keyframes explode{
@@ -184,62 +166,19 @@ z-index:1;
 100%{transform:scale(3);opacity:0}
 }
 
-/* FLOATING PHOTOS */
-
-.photo{
-position:absolute;
-width:90px;
-border-radius:10px;
-box-shadow:0 0 15px black;
-animation:floatPhoto 10s infinite linear;
-z-index:1;
-}
-
-@keyframes floatPhoto{
-0%{transform:translateY(120vh)}
-100%{transform:translateY(-120vh)}
-}
-
-/* HEART FLOAT */
-
-@keyframes float{
-0%{transform:translateY(0)}
-100%{transform:translateY(-120vh)}
-}
-
-/* MOBILE FIX */
+/* MOBILE */
 
 @media (max-width:700px){
 
-h1{ font-size:26px; }
+button{width:85%}
 
-.cake{ font-size:65px; }
+#letter{width:90%}
 
-button{
-width:85%;
-}
-
-#letter{
-width:90%;
-font-size:15px;
-}
-
-#letterText{
-font-size:15px;
-}
-
-.photo{
-width:65px;
-}
-
-.firework{
-font-size:20px;
-}
+.photo{width:65px}
 
 }
 
 </style>
-
 </head>
 
 <body>
@@ -259,10 +198,6 @@ font-size:20px;
 <h1>🎎 Happy Birthday 🎂</h1>
 <h2>Tamilore Esther Akiogbe ❤️</h2>
 
-<div style="font-size:22px;">お誕生日おめでとう 🌸</div>
-
-<div class="cake">🎂</div>
-
 <p>Even though you're in Japan, I built this little world just for you.</p>
 
 <button onclick="toggleLetter()">Read My Letter 💌</button>
@@ -275,6 +210,21 @@ font-size:20px;
 
 <div id="finalMessage">I love you Babe ❤️</div>
 
+</div>
+
+<h2>☀️ A Message For You</h2>
+<div id="timeMessage"
+style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600px;margin:20px auto;">
+</div>
+
+<h2>🌸 Today's Love Note</h2>
+<div id="dailyMessage"
+style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600px;margin:20px auto;">
+</div>
+
+<h2>⏳ Our Love Counter</h2>
+<div id="loveCounter"
+style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600px;margin:20px auto;">
 </div>
 
 </div>
@@ -314,27 +264,18 @@ startPhotos();
 /* FIREWORKS */
 
 function startFireworks(){
-
 setInterval(()=>{
-
 let fire=document.createElement("div");
-
 fire.className="firework";
-
 fire.innerHTML="🎆";
-
 fire.style.left=Math.random()*100+"vw";
 fire.style.top=Math.random()*50+"vh";
-
 document.body.appendChild(fire);
-
 setTimeout(()=>fire.remove(),1000);
-
-},1600);
-
+},1500);
 }
 
-/* FLOATING PHOTOS */
+/* PHOTOS */
 
 function startPhotos(){
 
@@ -343,11 +284,8 @@ let photos=["photo1.jpg","photo2.jpg"];
 setInterval(()=>{
 
 let img=document.createElement("img");
-
 img.src=photos[Math.floor(Math.random()*photos.length)];
-
 img.className="photo";
-
 img.style.left=Math.random()*100+"vw";
 
 document.body.appendChild(img);
@@ -390,7 +328,6 @@ return;
 }
 
 box.style.display="block";
-
 typeLetter();
 
 }
@@ -398,7 +335,6 @@ typeLetter();
 function typeLetter(){
 
 let text=document.getElementById("letterText");
-
 text.innerHTML="";
 
 let i=0;
@@ -406,17 +342,13 @@ let i=0;
 function typing(){
 
 if(i<message.length){
-
 text.innerHTML+=message.charAt(i);
 i++;
 setTimeout(typing,18);
-
-}else{
-
+}
+else{
 document.getElementById("finalMessage").style.display="block";
-
 spellName();
-
 }
 
 }
@@ -452,6 +384,51 @@ document.body.appendChild(t);
 }
 
 }
+
+/* TIME OF DAY MESSAGE */
+
+const hour=new Date().getHours();
+let greeting="";
+
+if(hour<12){
+greeting="☀️ Good morning babe. I hope you woke up smiling today.";
+}
+else if(hour<18){
+greeting="🌤 Good afternoon babe. Just thinking about you and your beautiful smile.";
+}
+else{
+greeting="🌙 Good evening babe. Sleep well tonight, I'm always thinking about you.";
+}
+
+document.getElementById("timeMessage").innerText=greeting;
+
+/* DAILY MESSAGE */
+
+const messages=[
+"You are my moon in the darkest nights 🌙",
+"I hope today brings you happiness and peace ❤️",
+"You make life brighter just by being you.",
+"I can't wait for the day we travel the world together ✈️",
+"Thinking about you today babe ❤️",
+"You hold the key to my heart and keep it safe.",
+"You are the best thing that happened to me."
+];
+
+const today=new Date();
+const index=today.getDate()%messages.length;
+
+document.getElementById("dailyMessage").innerText=messages[index];
+
+/* LOVE COUNTER */
+
+let startDate=new Date("2023-07-01"); /* change to your real date */
+
+let now=new Date();
+
+let diff=Math.floor((now-startDate)/(1000*60*60*24));
+
+document.getElementById("loveCounter").innerText=
+"Day "+diff+" of loving you ❤️";
 
 </script>
 
