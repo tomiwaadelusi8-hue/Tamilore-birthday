@@ -1,22 +1,27 @@
 ```html
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Tamilore ❤️</title>
 
 <style>
 
+/* BODY */
+
 body{
 margin:0;
 font-family:Segoe UI,Arial;
-color:white;
 text-align:center;
+color:white;
 overflow-x:hidden;
 background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
 }
 
-/* TORII GATE ENTRANCE */
+/* TORII ENTRANCE */
 
 #entrance{
 position:fixed;
@@ -35,18 +40,20 @@ z-index:9999;
 #entrance h1{
 background:rgba(0,0,0,.6);
 padding:20px 40px;
-border-radius:10px;
+border-radius:12px;
 color:#ffd700;
 }
+
+/* BUTTON */
 
 button{
 padding:12px 25px;
 border:none;
 border-radius:10px;
 background:linear-gradient(45deg,#ff4d6d,#ffd700);
-cursor:pointer;
-margin:10px;
 font-weight:bold;
+cursor:pointer;
+margin:12px;
 }
 
 /* MOUNT FUJI */
@@ -90,7 +97,17 @@ animation:swing 4s infinite ease-in-out;
 100%{transform:rotate(-6deg)}
 }
 
-/* MAIN CONTENT */
+/* SAKURA TREE */
+
+#tree{
+position:absolute;
+bottom:80px;
+left:50%;
+transform:translateX(-50%);
+font-size:80px;
+}
+
+/* MAIN */
 
 .container{
 margin-top:70px;
@@ -176,9 +193,12 @@ button{width:85%}
 
 .photo{width:65px}
 
+#tree{font-size:60px}
+
 }
 
 </style>
+
 </head>
 
 <body>
@@ -187,6 +207,8 @@ button{width:85%}
 
 <div class="lantern left">🏮</div>
 <div class="lantern right">🏮</div>
+
+<div id="tree">🌱</div>
 
 <div id="entrance">
 <h1>Welcome Tamilore ❤️</h1>
@@ -212,17 +234,26 @@ button{width:85%}
 
 </div>
 
+<h2>🇯🇵 Osaka Time</h2>
+
+<div id="japanClock"
+style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600px;margin:20px auto;">
+</div>
+
 <h2>☀️ A Message For You</h2>
+
 <div id="timeMessage"
 style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600px;margin:20px auto;">
 </div>
 
 <h2>🌸 Today's Love Note</h2>
+
 <div id="dailyMessage"
 style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600px;margin:20px auto;">
 </div>
 
 <h2>⏳ Our Love Counter</h2>
+
 <div id="loveCounter"
 style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600px;margin:20px auto;">
 </div>
@@ -231,19 +262,47 @@ style="background:rgba(0,0,0,.75);padding:20px;border-radius:15px;max-width:600p
 
 <script>
 
+/* JAPAN TIME */
+
+function getJapanDate(){
+return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
+}
+
+/* LIVE CLOCK */
+
+function updateClock(){
+
+let japan=new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
+
+document.getElementById("japanClock").innerText="Current Time in Osaka 🇯🇵: "+japan;
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
 /* PETALS */
 
 function createPetal(){
+
 let p=document.createElement("div");
+
 p.className="petal";
+
 p.innerHTML="🌸";
+
 p.style.left=Math.random()*100+"vw";
+
 document.body.appendChild(p);
+
 setTimeout(()=>p.remove(),8000);
+
 }
+
 setInterval(createPetal,250);
 
-/* ENTER SITE */
+/* ENTER */
 
 function enterSite(){
 
@@ -264,15 +323,25 @@ startPhotos();
 /* FIREWORKS */
 
 function startFireworks(){
+
 setInterval(()=>{
+
 let fire=document.createElement("div");
+
 fire.className="firework";
+
 fire.innerHTML="🎆";
+
 fire.style.left=Math.random()*100+"vw";
+
 fire.style.top=Math.random()*50+"vh";
+
 document.body.appendChild(fire);
+
 setTimeout(()=>fire.remove(),1000);
+
 },1500);
+
 }
 
 /* PHOTOS */
@@ -284,8 +353,11 @@ let photos=["photo1.jpg","photo2.jpg"];
 setInterval(()=>{
 
 let img=document.createElement("img");
+
 img.src=photos[Math.floor(Math.random()*photos.length)];
+
 img.className="photo";
+
 img.style.left=Math.random()*100+"vw";
 
 document.body.appendChild(img);
@@ -328,6 +400,7 @@ return;
 }
 
 box.style.display="block";
+
 typeLetter();
 
 }
@@ -335,6 +408,7 @@ typeLetter();
 function typeLetter(){
 
 let text=document.getElementById("letterText");
+
 text.innerHTML="";
 
 let i=0;
@@ -372,9 +446,13 @@ let t=document.createElement("div");
 t.innerHTML=name[i];
 
 t.style.position="absolute";
+
 t.style.left=(20+i*8)+"vw";
+
 t.style.top="35vh";
+
 t.style.fontSize="40px";
+
 t.style.color="gold";
 
 document.body.appendChild(t);
@@ -385,54 +463,81 @@ document.body.appendChild(t);
 
 }
 
-/* TIME OF DAY MESSAGE */
+/* JAPAN DATE */
 
-const hour=new Date().getHours();
+let japanDate=getJapanDate();
+
+/* TIME MESSAGE */
+
+let hour=japanDate.getHours();
+
 let greeting="";
 
 if(hour<12){
-greeting="☀️ Good morning babe. I hope you woke up smiling today.";
+greeting="☀️ Good morning babe.";
 }
 else if(hour<18){
-greeting="🌤 Good afternoon babe. Just thinking about you and your beautiful smile.";
+greeting="🌤 Good afternoon babe.";
 }
 else{
-greeting="🌙 Good evening babe. Sleep well tonight, I'm always thinking about you.";
+greeting="🌙 Good evening babe.";
 }
 
 document.getElementById("timeMessage").innerText=greeting;
 
-/* DAILY MESSAGE */
+/* DAILY NOTE */
 
 const messages=[
 "You are my moon in the darkest nights 🌙",
-"I hope today brings you happiness and peace ❤️",
+"I hope today brings you happiness ❤️",
 "You make life brighter just by being you.",
-"I can't wait for the day we travel the world together ✈️",
-"Thinking about you today babe ❤️",
-"You hold the key to my heart and keep it safe.",
-"You are the best thing that happened to me."
+"I can't wait to travel the world with you.",
+"Thinking about you today babe ❤️"
 ];
 
-const today=new Date();
-const index=today.getDate()%messages.length;
-
-document.getElementById("dailyMessage").innerText=messages[index];
+document.getElementById("dailyMessage").innerText=
+messages[japanDate.getDate()%messages.length];
 
 /* LOVE COUNTER */
 
-let startDate=new Date("2023-07-01"); /* change to your real date */
+let startDate=new Date("2023-07-26");
 
-let now=new Date();
-
-let diff=Math.floor((now-startDate)/(1000*60*60*24));
+let diff=Math.floor((japanDate-startDate)/(1000*60*60*24));
 
 document.getElementById("loveCounter").innerText=
 "Day "+diff+" of loving you ❤️";
 
+/* SAKURA TREE GROWTH */
+
+let months=(japanDate.getFullYear()-startDate.getFullYear())*12+
+(japanDate.getMonth()-startDate.getMonth());
+
+let tree=document.getElementById("tree");
+
+if(months<1) tree.innerHTML="🌱";
+else if(months<3) tree.innerHTML="🌿";
+else if(months<6) tree.innerHTML="🌳";
+else tree.innerHTML="🌸";
+
+/* ANNIVERSARY */
+
+if(japanDate.getDate()===26){
+
+let banner=document.createElement("div");
+
+banner.innerHTML="🎉 Happy Monthly Anniversary Babe ❤️";
+
+banner.style.fontSize="28px";
+
+banner.style.color="gold";
+
+document.querySelector(".container").prepend(banner);
+
+}
+
 </script>
 
 </body>
+
 </html>
 ```
-
