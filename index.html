@@ -5,100 +5,100 @@
 <title>Tamilore ❤️</title>
 
 <style>
-body{
-margin:0;
-font-family:Segoe UI,Arial;
-text-align:center;
-color:white;
-background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
-overflow-x:hidden;
+body {
+  margin:0;
+  font-family:Segoe UI,Arial;
+  text-align:center;
+  color:white;
+  background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
+  overflow-x:hidden;
 }
 
 /* ENTRANCE */
-#entrance{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:url("torii.jpg") center/cover no-repeat;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:9999;
+#entrance {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:url("torii.jpg") center/cover no-repeat;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
 }
 
-button{
-padding:12px 25px;
-border:none;
-border-radius:10px;
-background:linear-gradient(45deg,#ff4d6d,#ffd700);
-font-weight:bold;
-cursor:pointer;
-margin:10px;
+button {
+  padding:12px 25px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(45deg,#ff4d6d,#ffd700);
+  font-weight:bold;
+  cursor:pointer;
+  margin:10px;
 }
 
 /* TREE */
-#treeContainer{
-position:absolute;
-bottom:80px;
-left:50%;
-transform:translateX(-50%);
-text-align:center;
+#treeContainer {
+  position:absolute;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  text-align:center;
 }
-#treeTrunk{
-width:20px;
-height:60px;
-background:#5c3b1e;
-margin:auto;
+#treeTrunk {
+  width:20px;
+  height:60px;
+  background:#5c3b1e;
+  margin:auto;
 }
-#treeLeaves{
-font-size:40px;
+#treeLeaves {
+  font-size:40px;
 }
 
 /* CARDS */
-.card{
-background:rgba(0,0,0,.75);
-padding:20px;
-border-radius:15px;
-max-width:650px;
-margin:20px auto;
+.card {
+  background:rgba(0,0,0,.75);
+  padding:20px;
+  border-radius:15px;
+  max-width:650px;
+  margin:20px auto;
 }
 
 /* LETTER */
-#letter{
-display:none;
+#letter {
+  display:none;
 }
 
 /* CHAT */
-#messages{
-max-height:300px;
-overflow-y:auto;
-text-align:left;
+#messages {
+  max-height:300px;
+  overflow-y:auto;
+  text-align:left;
 }
 
-.msg{
-padding:10px;
-border-radius:12px;
-margin:8px;
-max-width:70%;
+.msg {
+  padding:10px;
+  border-radius:12px;
+  margin:8px;
+  max-width:70%;
 }
 
-.me{
-background:white;
-color:black;
-margin-left:auto;
+.me {
+  background:white;
+  color:black;
+  margin-left:auto;
 }
 
-.her{
-background:#ff4d6d;
+.her {
+  background:#ff4d6d;
 }
 
-input, textarea{
-border:none;
-border-radius:10px;
-padding:10px;
+input, textarea {
+  border:none;
+  border-radius:10px;
+  padding:10px;
 }
 
 </style>
@@ -107,13 +107,13 @@ padding:10px;
 <body>
 
 <div id="treeContainer">
-<div id="treeTrunk"></div>
-<div id="treeLeaves"></div>
+  <div id="treeTrunk"></div>
+  <div id="treeLeaves"></div>
 </div>
 
 <div id="entrance">
-<h1>Welcome ❤️</h1>
-<button onclick="enterSite()">Enter</button>
+  <h1>Welcome ❤️</h1>
+  <button onclick="enterSite()">Enter</button>
 </div>
 
 <div class="container">
@@ -123,7 +123,7 @@ padding:10px;
 <button onclick="toggleLetter()">Read My Letter</button>
 
 <div id="letter" class="card">
-<p id="letterText"></p>
+  <p id="letterText"></p>
 </div>
 
 <div id="japanClock" class="card"></div>
@@ -140,7 +140,6 @@ padding:10px;
 style="width:80%;height:100px;"></textarea>
 
 <br>
-
 <button onclick="sendMessage()">Send ❤️</button>
 
 <div id="messages" class="card"></div>
@@ -153,66 +152,66 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, addDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ✅ SAFE: import config from private file
-import { firebaseConfig } from './firebase-config.js'; // this file must NOT be on GitHub
+import { firebaseConfig } from './firebase-config.js'; // private, do NOT commit to GitHub
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // SEND MESSAGE
 window.sendMessage = async function(){
-    let text=document.getElementById("msgInput").value;
-    let name=document.getElementById("nameInput").value || "Anonymous";
+  let text = document.getElementById("msgInput").value;
+  let name = document.getElementById("nameInput").value || "Anonymous";
 
-    if(text.trim()==="") return;
+  if(text.trim() === "") return;
 
-    await addDoc(collection(db,"messages"),{
-        name:name,
-        message:text,
-        timestamp:serverTimestamp()
-    });
+  await addDoc(collection(db,"messages"),{
+    name: name,
+    message: text,
+    timestamp: serverTimestamp()
+  });
 
-    document.getElementById("msgInput").value="";
+  document.getElementById("msgInput").value = "";
 };
 
 // LIVE CHAT
-const box=document.getElementById("messages");
-const q=query(collection(db,"messages"),orderBy("timestamp"));
+const box = document.getElementById("messages");
+const q = query(collection(db,"messages"),orderBy("timestamp"));
 
 onSnapshot(q,(snapshot)=>{
-    box.innerHTML="";
-    snapshot.forEach(doc=>{
-        let data=doc.data();
-        let myNames=["tomiwa","tomi","adelusi"];
-        let isMe=myNames.some(n=>data.name.toLowerCase().includes(n));
-        box.innerHTML+=`
-        <div class="msg ${isMe?'me':'her'}">
+  box.innerHTML = "";
+  snapshot.forEach(doc=>{
+    let data = doc.data();
+    let myNames=["tomiwa","tomi","adelusi"];
+    let isMe=myNames.some(n=>data.name.toLowerCase().includes(n));
+    box.innerHTML += `
+      <div class="msg ${isMe?'me':'her'}">
         <strong>${data.name}</strong><br>${data.message}
-        </div>
-        `;
-    });
-    box.scrollTop=box.scrollHeight;
+      </div>
+    `;
+  });
+  box.scrollTop = box.scrollHeight;
 });
 </script>
 
 <script>
 // JAPAN TIME
 function getJapanDate(){
-    return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
+  return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
 }
 
 // CLOCK
 function updateClock(){
-    let time=new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
-    document.getElementById("japanClock").innerText="Osaka Time 🇯🇵: "+time;
+  let time = new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
+  document.getElementById("japanClock").innerText = "Osaka Time 🇯🇵: " + time;
 }
 setInterval(updateClock,1000);
 updateClock();
 
 // ENTER
 function enterSite(){
-    let p=prompt("Password");
-    if(p!=="black"){alert("Wrong password");return;}
-    document.getElementById("entrance").style.display="none";
+  let p = prompt("Password");
+  if(p !== "black"){ alert("Wrong password"); return; }
+  document.getElementById("entrance").style.display = "none";
 }
 
 // LETTER
@@ -231,18 +230,18 @@ You are my moon in the darkest nights.
 I love you ❤️`;
 
 function toggleLetter(){
-    let l=document.getElementById("letter");
-    l.style.display=l.style.display==="block"?"none":"block";
-    document.getElementById("letterText").innerText=msg;
+  let l = document.getElementById("letter");
+  l.style.display = l.style.display === "block" ? "none" : "block";
+  document.getElementById("letterText").innerText = msg;
 }
 
 // TIME MESSAGE
-let japan=getJapanDate();
-let hour=japan.getHours();
-let greeting=hour<12?"☀️ Good morning babe":
-             hour<18?"🌤 Good afternoon babe":
-             "🌙 Good night babe";
-document.getElementById("timeMessage").innerText=greeting;
+let japan = getJapanDate();
+let hour = japan.getHours();
+let greeting = hour < 12 ? "☀️ Good morning babe" :
+               hour < 18 ? "🌤 Good afternoon babe" :
+               "🌙 Good night babe";
+document.getElementById("timeMessage").innerText = greeting;
 
 // DAILY MESSAGES
 const messages=[
@@ -254,20 +253,20 @@ const messages=[
 "I cherish you","You are amazing","I adore you",
 "You complete me","I love you endlessly ❤️"
 ];
-document.getElementById("dailyMessage").innerText=messages[japan.getDate()%messages.length];
+document.getElementById("dailyMessage").innerText = messages[japan.getDate() % messages.length];
 
 // LOVE COUNTER
-let startDate=new Date("2024-08-26");
-let diff=Math.floor((japan-startDate)/(1000*60*60*24));
-document.getElementById("loveCounter").innerText="Day "+diff+" of loving you ❤️";
+let startDate = new Date("2024-08-26");
+let diff = Math.floor((japan - startDate)/(1000*60*60*24));
+document.getElementById("loveCounter").innerText = "Day " + diff + " of loving you ❤️";
 
 // TREE
-let months=(japan.getFullYear()-startDate.getFullYear())*12+
-           (japan.getMonth()-startDate.getMonth());
-let leaves=document.getElementById("treeLeaves");
-if(months<1) leaves.innerHTML="🌱";
-else if(months<3) leaves.innerHTML="🌿";
-else if(months<6) leaves.innerHTML="🌸🌸";
+let months = (japan.getFullYear()-startDate.getFullYear())*12 +
+             (japan.getMonth()-startDate.getMonth());
+let leaves = document.getElementById("treeLeaves");
+if(months < 1) leaves.innerHTML="🌱";
+else if(months < 3) leaves.innerHTML="🌿";
+else if(months < 6) leaves.innerHTML="🌸🌸";
 else leaves.innerHTML="🌸🌸🌸🌸";
 </script>
 
