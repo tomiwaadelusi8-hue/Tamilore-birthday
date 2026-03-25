@@ -14,7 +14,7 @@ background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
 overflow-x:hidden;
 }
 
-/* 🌸 Sakura petals */
+/* Sakura */
 .sakura{
 position:fixed;
 top:-10px;
@@ -26,14 +26,11 @@ opacity:0.7;
 animation:fall linear infinite;
 z-index:1;
 }
-
 @keyframes fall{
-to{
-transform:translateY(100vh);
-}
+to{transform:translateY(100vh);}
 }
 
-/* ENTRANCE */
+/* Entrance */
 #entrance{
 position:fixed;
 top:0;
@@ -42,13 +39,13 @@ width:100%;
 height:100%;
 background:url("torii.jpg") center/cover no-repeat;
 display:flex;
-flex-direction:column;
 justify-content:center;
 align-items:center;
+flex-direction:column;
 z-index:9999;
 }
 
-/* TREE */
+/* Tree */
 #treeContainer{
 position:absolute;
 bottom:80px;
@@ -56,10 +53,10 @@ left:50%;
 transform:translateX(-50%) scale(0.8);
 pointer-events:none;
 z-index:0;
-transition:transform 1s ease;
+transition:1s;
 }
 
-/* CARDS */
+/* Layout */
 .container{
 position:relative;
 z-index:2;
@@ -73,7 +70,7 @@ max-width:650px;
 margin:20px auto;
 }
 
-/* CHAT (iMessage style) */
+/* Chat */
 #messages{
 max-height:300px;
 overflow-y:auto;
@@ -85,23 +82,20 @@ padding:10px 14px;
 border-radius:20px;
 margin:8px;
 max-width:70%;
-line-height:1.4;
 }
 
 .me{
-background:#ffffff;
+background:white;
 color:black;
 margin-left:auto;
-border-bottom-right-radius:5px;
 }
 
 .her{
 background:#ff4d6d;
-border-bottom-left-radius:5px;
 }
 
-/* INPUTS */
-input, textarea{
+/* Inputs */
+input,textarea{
 border:none;
 border-radius:10px;
 padding:10px;
@@ -118,14 +112,13 @@ font-weight:bold;
 cursor:pointer;
 margin:10px;
 }
-
 </style>
 </head>
 
 <body>
 
 <div id="treeContainer">
-<div style="font-size:50px;" id="treeLeaves">🌱</div>
+<div id="treeLeaves" style="font-size:50px;">🌱</div>
 </div>
 
 <div id="entrance">
@@ -137,24 +130,10 @@ margin:10px;
 
 <h1>Happy Birthday ❤️</h1>
 
-<button onclick="toggleLetter()">Read My Letter</button>
-
-<div id="letter" class="card">
-<p id="letterText"></p>
-</div>
-
-<div id="japanClock" class="card"></div>
-<div id="timeMessage" class="card"></div>
-<div id="dailyMessage" class="card"></div>
-<div id="loveCounter" class="card"></div>
-
-<h2>💌 Send Me a Message</h2>
-
 <input id="nameInput" placeholder="Your name">
 <br><br>
 
-<textarea id="msgInput" placeholder="Write something for me..."></textarea>
-
+<textarea id="msgInput" placeholder="Write something..."></textarea>
 <br>
 
 <button onclick="sendMessage()">Send ❤️</button>
@@ -163,15 +142,16 @@ margin:10px;
 
 </div>
 
-<!-- FIREBASE -->
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, addDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, addDoc, collection, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+/* SEND */
 window.sendMessage = async function(){
 let text=document.getElementById("msgInput").value;
 let name=document.getElementById("nameInput").value || "Anonymous";
@@ -187,29 +167,42 @@ timestamp:serverTimestamp()
 document.getElementById("msgInput").value="";
 };
 
+/* RECEIVE (FIXED) */
 const box=document.getElementById("messages");
-const q=query(collection(db,"messages"),orderBy("timestamp"));
 
-onSnapshot(q,(snapshot)=>{
+onSnapshot(collection(db,"messages"), (snapshot)=>{
 box.innerHTML="";
+
+let msgs=[];
+
 snapshot.forEach(doc=>{
-let data=doc.data();
+msgs.push(doc.data());
+});
+
+/* FIX SORT */
+msgs.sort((a,b)=>{
+return (a.timestamp?.seconds||0)-(b.timestamp?.seconds||0);
+});
+
+msgs.forEach(data=>{
 let myNames=["tomiwa","tomi","adelusi"];
-let isMe=myNames.some(n=>data.name.toLowerCase().includes(n));
+let isMe=myNames.some(n=>(data.name||"").toLowerCase().includes(n));
 
 box.innerHTML+=`
 <div class="msg ${isMe?'me':'her'}">
+<strong>${data.name||"Anon"}</strong><br>
 ${data.message}
 </div>`;
 });
+
 box.scrollTop=box.scrollHeight;
 });
 </script>
 
 <script>
 
-/* 🌸 Sakura */
-function createPetal(){
+/* Sakura */
+function petal(){
 let p=document.createElement("div");
 p.className="sakura";
 p.style.left=Math.random()*100+"vw";
@@ -217,48 +210,21 @@ p.style.animationDuration=(Math.random()*3+2)+"s";
 document.body.appendChild(p);
 setTimeout(()=>p.remove(),5000);
 }
-setInterval(createPetal,300);
+setInterval(petal,300);
 
-/* JAPAN TIME */
-function getJapanDate(){
-return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
-}
-
-/* CLOCK */
-function updateClock(){
-let time=new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
-document.getElementById("japanClock").innerText="Osaka Time 🇯🇵: "+time;
-}
-setInterval(updateClock,1000);
-updateClock();
-
-/* ENTER */
+/* Enter */
 function enterSite(){
 let p=prompt("Password");
-if(p!=="black"){alert("Wrong password");return;}
+if(p!=="black"){alert("Wrong");return;}
 document.getElementById("entrance").remove();
 }
 
-/* LETTER */
-let msg=`Happy Birthday.
+/* Tree growth */
+let japan=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
+let start=new Date("2024-08-26");
 
-I love you so much ❤️`;
-
-function toggleLetter(){
-let l=document.getElementById("letter");
-l.style.display=l.style.display==="block"?"none":"block";
-document.getElementById("letterText").innerText=msg;
-}
-
-/* LOVE + TREE GROWTH */
-let japan=getJapanDate();
-let startDate=new Date("2024-08-26");
-
-let diff=Math.floor((japan-startDate)/(1000*60*60*24));
-document.getElementById("loveCounter").innerText="Day "+diff+" ❤️";
-
-let months=(japan.getFullYear()-startDate.getFullYear())*12+
-(japan.getMonth()-startDate.getMonth());
+let months=(japan.getFullYear()-start.getFullYear())*12+
+(japan.getMonth()-start.getMonth());
 
 let tree=document.getElementById("treeContainer");
 tree.style.transform=`translateX(-50%) scale(${0.8+months*0.05})`;
