@@ -5,100 +5,118 @@
 <title>Tamilore ❤️</title>
 
 <style>
-body {
-  margin:0;
-  font-family:Segoe UI,Arial;
-  text-align:center;
-  color:white;
-  background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
-  overflow-x:hidden;
+body{
+margin:0;
+font-family:Segoe UI,Arial;
+text-align:center;
+color:white;
+background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
+overflow-x:hidden;
+}
+
+/* 🌸 Sakura petals */
+.sakura{
+position:fixed;
+top:-10px;
+width:8px;
+height:8px;
+background:pink;
+border-radius:50%;
+opacity:0.7;
+animation:fall linear infinite;
+z-index:1;
+}
+
+@keyframes fall{
+to{
+transform:translateY(100vh);
+}
 }
 
 /* ENTRANCE */
-#entrance {
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:url("torii.jpg") center/cover no-repeat;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-button {
-  padding:12px 25px;
-  border:none;
-  border-radius:10px;
-  background:linear-gradient(45deg,#ff4d6d,#ffd700);
-  font-weight:bold;
-  cursor:pointer;
-  margin:10px;
+#entrance{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:url("torii.jpg") center/cover no-repeat;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+z-index:9999;
 }
 
 /* TREE */
-#treeContainer {
-  position:absolute;
-  bottom:80px;
-  left:50%;
-  transform:translateX(-50%);
-  text-align:center;
-}
-#treeTrunk {
-  width:20px;
-  height:60px;
-  background:#5c3b1e;
-  margin:auto;
-}
-#treeLeaves {
-  font-size:40px;
+#treeContainer{
+position:absolute;
+bottom:80px;
+left:50%;
+transform:translateX(-50%) scale(0.8);
+pointer-events:none;
+z-index:0;
+transition:transform 1s ease;
 }
 
 /* CARDS */
-.card {
-  background:rgba(0,0,0,.75);
-  padding:20px;
-  border-radius:15px;
-  max-width:650px;
-  margin:20px auto;
+.container{
+position:relative;
+z-index:2;
 }
 
-/* LETTER */
-#letter {
-  display:none;
+.card{
+background:rgba(0,0,0,.75);
+padding:20px;
+border-radius:15px;
+max-width:650px;
+margin:20px auto;
 }
 
-/* CHAT */
-#messages {
-  max-height:300px;
-  overflow-y:auto;
-  text-align:left;
+/* CHAT (iMessage style) */
+#messages{
+max-height:300px;
+overflow-y:auto;
+text-align:left;
 }
 
-.msg {
-  padding:10px;
-  border-radius:12px;
-  margin:8px;
-  max-width:70%;
+.msg{
+padding:10px 14px;
+border-radius:20px;
+margin:8px;
+max-width:70%;
+line-height:1.4;
 }
 
-.me {
-  background:white;
-  color:black;
-  margin-left:auto;
+.me{
+background:#ffffff;
+color:black;
+margin-left:auto;
+border-bottom-right-radius:5px;
 }
 
-.her {
-  background:#ff4d6d;
+.her{
+background:#ff4d6d;
+border-bottom-left-radius:5px;
 }
 
-input, textarea {
-  border:none;
-  border-radius:10px;
-  padding:10px;
+/* INPUTS */
+input, textarea{
+border:none;
+border-radius:10px;
+padding:10px;
+width:80%;
+font-size:16px;
+}
+
+button{
+padding:12px 25px;
+border:none;
+border-radius:10px;
+background:linear-gradient(45deg,#ff4d6d,#ffd700);
+font-weight:bold;
+cursor:pointer;
+margin:10px;
 }
 
 </style>
@@ -107,13 +125,12 @@ input, textarea {
 <body>
 
 <div id="treeContainer">
-  <div id="treeTrunk"></div>
-  <div id="treeLeaves"></div>
+<div style="font-size:50px;" id="treeLeaves">🌱</div>
 </div>
 
 <div id="entrance">
-  <h1>Welcome ❤️</h1>
-  <button onclick="enterSite()">Enter</button>
+<h1>Welcome ❤️</h1>
+<button onclick="enterSite()">Enter</button>
 </div>
 
 <div class="container">
@@ -123,7 +140,7 @@ input, textarea {
 <button onclick="toggleLetter()">Read My Letter</button>
 
 <div id="letter" class="card">
-  <p id="letterText"></p>
+<p id="letterText"></p>
 </div>
 
 <div id="japanClock" class="card"></div>
@@ -136,10 +153,10 @@ input, textarea {
 <input id="nameInput" placeholder="Your name">
 <br><br>
 
-<textarea id="msgInput" placeholder="Write something for me..."
-style="width:80%;height:100px;"></textarea>
+<textarea id="msgInput" placeholder="Write something for me..."></textarea>
 
 <br>
+
 <button onclick="sendMessage()">Send ❤️</button>
 
 <div id="messages" class="card"></div>
@@ -150,124 +167,108 @@ style="width:80%;height:100px;"></textarea>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, addDoc, collection, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-// ✅ SAFE: import config from private file
-import { firebaseConfig } from './firebase-config.js'; // private, do NOT commit to GitHub
+import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// SEND MESSAGE
 window.sendMessage = async function(){
-  let text = document.getElementById("msgInput").value;
-  let name = document.getElementById("nameInput").value || "Anonymous";
+let text=document.getElementById("msgInput").value;
+let name=document.getElementById("nameInput").value || "Anonymous";
 
-  if(text.trim() === "") return;
+if(text.trim()==="") return;
 
-  await addDoc(collection(db,"messages"),{
-    name: name,
-    message: text,
-    timestamp: serverTimestamp()
-  });
+await addDoc(collection(db,"messages"),{
+name:name,
+message:text,
+timestamp:serverTimestamp()
+});
 
-  document.getElementById("msgInput").value = "";
+document.getElementById("msgInput").value="";
 };
 
-// LIVE CHAT
-const box = document.getElementById("messages");
-const q = query(collection(db,"messages"),orderBy("timestamp"));
+const box=document.getElementById("messages");
+const q=query(collection(db,"messages"),orderBy("timestamp"));
 
 onSnapshot(q,(snapshot)=>{
-  box.innerHTML = "";
-  snapshot.forEach(doc=>{
-    let data = doc.data();
-    let myNames=["tomiwa","tomi","adelusi"];
-    let isMe=myNames.some(n=>data.name.toLowerCase().includes(n));
-    box.innerHTML += `
-      <div class="msg ${isMe?'me':'her'}">
-        <strong>${data.name}</strong><br>${data.message}
-      </div>
-    `;
-  });
-  box.scrollTop = box.scrollHeight;
+box.innerHTML="";
+snapshot.forEach(doc=>{
+let data=doc.data();
+let myNames=["tomiwa","tomi","adelusi"];
+let isMe=myNames.some(n=>data.name.toLowerCase().includes(n));
+
+box.innerHTML+=`
+<div class="msg ${isMe?'me':'her'}">
+${data.message}
+</div>`;
+});
+box.scrollTop=box.scrollHeight;
 });
 </script>
 
 <script>
-// JAPAN TIME
+
+/* 🌸 Sakura */
+function createPetal(){
+let p=document.createElement("div");
+p.className="sakura";
+p.style.left=Math.random()*100+"vw";
+p.style.animationDuration=(Math.random()*3+2)+"s";
+document.body.appendChild(p);
+setTimeout(()=>p.remove(),5000);
+}
+setInterval(createPetal,300);
+
+/* JAPAN TIME */
 function getJapanDate(){
-  return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
+return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
 }
 
-// CLOCK
+/* CLOCK */
 function updateClock(){
-  let time = new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
-  document.getElementById("japanClock").innerText = "Osaka Time 🇯🇵: " + time;
+let time=new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
+document.getElementById("japanClock").innerText="Osaka Time 🇯🇵: "+time;
 }
 setInterval(updateClock,1000);
 updateClock();
 
-// ENTER
+/* ENTER */
 function enterSite(){
-  let p = prompt("Password");
-  if(p !== "black"){ alert("Wrong password"); return; }
-  document.getElementById("entrance").style.display = "none";
+let p=prompt("Password");
+if(p!=="black"){alert("Wrong password");return;}
+document.getElementById("entrance").remove();
 }
 
-// LETTER
+/* LETTER */
 let msg=`Happy Birthday.
 
-It’s crazy to think we met at school and two years ago we found love.
-
-Even with the break we had, we still found our way back to each other.
-
-I love your personality, your stubborn but sweet nature, and your smile.
-
-One of my favorite memories was our karaoke.
-
-You are my moon in the darkest nights.
-
-I love you ❤️`;
+I love you so much ❤️`;
 
 function toggleLetter(){
-  let l = document.getElementById("letter");
-  l.style.display = l.style.display === "block" ? "none" : "block";
-  document.getElementById("letterText").innerText = msg;
+let l=document.getElementById("letter");
+l.style.display=l.style.display==="block"?"none":"block";
+document.getElementById("letterText").innerText=msg;
 }
 
-// TIME MESSAGE
-let japan = getJapanDate();
-let hour = japan.getHours();
-let greeting = hour < 12 ? "☀️ Good morning babe" :
-               hour < 18 ? "🌤 Good afternoon babe" :
-               "🌙 Good night babe";
-document.getElementById("timeMessage").innerText = greeting;
+/* LOVE + TREE GROWTH */
+let japan=getJapanDate();
+let startDate=new Date("2024-08-26");
 
-// DAILY MESSAGES
-const messages=[
-"You are my moon 🌙","I love you more every day ❤️","You make life better",
-"I miss you today","Thinking about you","You are my happiness",
-"My favorite person ❤️","I can't wait to see you","You are beautiful",
-"I love your smile","You mean everything to me","You make me happy",
-"I appreciate you","You are special","My heart is yours",
-"I cherish you","You are amazing","I adore you",
-"You complete me","I love you endlessly ❤️"
-];
-document.getElementById("dailyMessage").innerText = messages[japan.getDate() % messages.length];
+let diff=Math.floor((japan-startDate)/(1000*60*60*24));
+document.getElementById("loveCounter").innerText="Day "+diff+" ❤️";
 
-// LOVE COUNTER
-let startDate = new Date("2024-08-26");
-let diff = Math.floor((japan - startDate)/(1000*60*60*24));
-document.getElementById("loveCounter").innerText = "Day " + diff + " of loving you ❤️";
+let months=(japan.getFullYear()-startDate.getFullYear())*12+
+(japan.getMonth()-startDate.getMonth());
 
-// TREE
-let months = (japan.getFullYear()-startDate.getFullYear())*12 +
-             (japan.getMonth()-startDate.getMonth());
-let leaves = document.getElementById("treeLeaves");
-if(months < 1) leaves.innerHTML="🌱";
-else if(months < 3) leaves.innerHTML="🌿";
-else if(months < 6) leaves.innerHTML="🌸🌸";
+let tree=document.getElementById("treeContainer");
+tree.style.transform=`translateX(-50%) scale(${0.8+months*0.05})`;
+
+let leaves=document.getElementById("treeLeaves");
+if(months<1) leaves.innerHTML="🌱";
+else if(months<3) leaves.innerHTML="🌿";
+else if(months<6) leaves.innerHTML="🌸🌸";
 else leaves.innerHTML="🌸🌸🌸🌸";
+
 </script>
 
 </body>
