@@ -5,6 +5,7 @@
 <title>Tamilore ❤️</title>
 
 <style>
+
 body{
 margin:0;
 font-family:Segoe UI,Arial;
@@ -14,22 +15,8 @@ background:linear-gradient(to top,#2b1055,#7597de,#ffb6c1);
 overflow-x:hidden;
 }
 
-/* Sakura */
-.sakura{
-position:fixed;
-top:-10px;
-width:8px;
-height:8px;
-background:pink;
-border-radius:50%;
-animation:fall linear infinite;
-z-index:1;
-}
-@keyframes fall{
-to{transform:translateY(100vh);}
-}
+/* ENTRANCE */
 
-/* Entrance */
 #entrance{
 position:fixed;
 top:0;
@@ -44,65 +31,6 @@ align-items:center;
 z-index:9999;
 }
 
-/* Tree */
-#treeContainer{
-position:absolute;
-bottom:80px;
-left:50%;
-transform:translateX(-50%);
-pointer-events:none;
-z-index:0;
-}
-
-.container{
-position:relative;
-z-index:2;
-}
-
-/* Cards */
-.card{
-background:rgba(0,0,0,.75);
-padding:20px;
-border-radius:15px;
-max-width:650px;
-margin:20px auto;
-}
-
-#letter{display:none;}
-
-/* Chat */
-#messages{
-max-height:300px;
-overflow-y:auto;
-text-align:left;
-}
-
-.msg{
-padding:10px;
-border-radius:15px;
-margin:8px;
-max-width:70%;
-}
-
-.me{
-background:white;
-color:black;
-margin-left:auto;
-}
-
-.her{
-background:#ff4d6d;
-}
-
-/* Inputs */
-input,textarea{
-border:none;
-border-radius:10px;
-padding:10px;
-width:80%;
-font-size:16px;
-}
-
 button{
 padding:12px 25px;
 border:none;
@@ -112,14 +40,52 @@ font-weight:bold;
 cursor:pointer;
 margin:10px;
 }
+
+/* TREE */
+
+#treeContainer{
+position:absolute;
+bottom:80px;
+left:50%;
+transform:translateX(-50%);
+text-align:center;
+}
+
+#treeTrunk{
+width:20px;
+height:60px;
+background:#5c3b1e;
+margin:auto;
+}
+
+#treeLeaves{
+font-size:40px;
+}
+
+/* CARDS */
+
+.card{
+background:rgba(0,0,0,.75);
+padding:20px;
+border-radius:15px;
+max-width:600px;
+margin:20px auto;
+}
+
+/* LETTER */
+
+#letter{
+display:none;
+}
+
 </style>
 </head>
 
 <body>
 
 <div id="treeContainer">
-<div style="width:20px;height:60px;background:#5c3b1e;margin:auto;"></div>
-<div id="treeLeaves" style="font-size:40px;"></div>
+<div id="treeTrunk"></div>
+<div id="treeLeaves"></div>
 </div>
 
 <div id="entrance">
@@ -138,16 +104,20 @@ margin:10px;
 </div>
 
 <div id="japanClock" class="card"></div>
+
 <div id="timeMessage" class="card"></div>
+
 <div id="dailyMessage" class="card"></div>
+
 <div id="loveCounter" class="card"></div>
+
+<!-- MESSAGE SYSTEM -->
 
 <h2>💌 Send Me a Message</h2>
 
-<input id="nameInput" placeholder="Your name">
-<br><br>
+<textarea id="msgInput" placeholder="Write something for me..."
+style="width:80%;height:100px;border-radius:10px;padding:10px;"></textarea>
 
-<textarea id="msgInput" placeholder="Write something for me..."></textarea>
 <br>
 
 <button onclick="sendMessage()">Send ❤️</button>
@@ -156,130 +126,149 @@ margin:10px;
 
 </div>
 
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, addDoc, collection, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { firebaseConfig } from './firebase-config.js';
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* SAVE NAME */
-const nameInput=document.getElementById("nameInput");
-nameInput.value=localStorage.getItem("name")||"";
-nameInput.addEventListener("input",()=>{
-localStorage.setItem("name",nameInput.value);
-});
-
-/* SEND */
-window.sendMessage = async function(){
-let text=msgInput.value;
-let name=nameInput.value||"Anonymous";
-if(!text.trim()) return;
-
-await addDoc(collection(db,"messages"),{
-name:name,
-message:text,
-timestamp:serverTimestamp()
-});
-
-msgInput.value="";
-};
-
-/* RECEIVE (FIXED) */
-const box=document.getElementById("messages");
-
-onSnapshot(collection(db,"messages"), snap=>{
-box.innerHTML="";
-let arr=[];
-snap.forEach(doc=>arr.push(doc.data()));
-
-arr.sort((a,b)=>(a.timestamp?.seconds||0)-(b.timestamp?.seconds||0));
-
-arr.forEach(d=>{
-let isMe=(d.name||"").toLowerCase().includes("tomi");
-box.innerHTML+=`
-<div class="msg ${isMe?'me':'her'}">
-<strong>${d.name}</strong><br>${d.message}
-</div>`;
-});
-box.scrollTop=box.scrollHeight;
-});
-</script>
-
 <script>
 
-/* Sakura */
-setInterval(()=>{
-let p=document.createElement("div");
-p.className="sakura";
-p.style.left=Math.random()*100+"vw";
-p.style.animationDuration=(Math.random()*3+2)+"s";
-document.body.appendChild(p);
-setTimeout(()=>p.remove(),5000);
-},300);
+/* JAPAN TIME */
 
-/* Japan time */
 function getJapanDate(){
 return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
 }
 
-/* Clock */
+/* CLOCK */
+
 function updateClock(){
 let time=new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
-japanClock.innerText="Osaka Time 🇯🇵: "+time;
+document.getElementById("japanClock").innerText="Osaka Time 🇯🇵: "+time;
 }
 setInterval(updateClock,1000);
 updateClock();
 
-/* Enter */
+/* ENTER */
+
 function enterSite(){
 let p=prompt("Password");
 if(p!=="black"){alert("Wrong");return;}
-document.getElementById("entrance").remove();
+document.getElementById("entrance").style.display="none";
 }
 
-/* Letter */
-let msg=`Happy Birthday ❤️
+/* LETTER */
 
-I love you so much.
-You are my moon 🌙`;
+let msg=`Happy Birthday.
+
+It’s crazy to think we met at school and two years ago we found love.
+
+Even with the break we had, we still found our way back to each other.
+
+I love your personality, your stubborn but sweet nature, and your smile.
+
+One of my favorite memories was our karaoke.
+
+You are my moon in the darkest nights.
+
+I love you ❤️`;
 
 function toggleLetter(){
-letter.style.display=letter.style.display==="block"?"none":"block";
-letterText.innerText=msg;
+let l=document.getElementById("letter");
+l.style.display=l.style.display==="block"?"none":"block";
+document.getElementById("letterText").innerText=msg;
 }
 
-/* Time greeting */
+/* TIME MESSAGE */
+
 let japan=getJapanDate();
 let hour=japan.getHours();
+
 let greeting=hour<12?"☀️ Good morning babe":
 hour<18?"🌤 Good afternoon babe":
 "🌙 Good night babe";
-timeMessage.innerText=greeting;
 
-/* Daily */
+document.getElementById("timeMessage").innerText=greeting;
+
+/* DAILY MESSAGES */
+
 const messages=[
-"You are my moon 🌙","I love you more every day ❤️",
-"You make life better","Thinking about you ❤️"
+"You are my moon 🌙",
+"I love you more every day ❤️",
+"You make life better",
+"I miss you today",
+"Thinking about you",
+"You are my happiness",
+"My favorite person ❤️",
+"I can't wait to see you",
+"You are beautiful",
+"I love your smile",
+"You mean everything to me",
+"You make me happy",
+"I appreciate you",
+"You are special",
+"My heart is yours",
+"I cherish you",
+"You are amazing",
+"I adore you",
+"You complete me",
+"I love you endlessly ❤️"
 ];
-dailyMessage.innerText=messages[japan.getDate()%messages.length];
 
-/* Love counter */
+document.getElementById("dailyMessage").innerText=
+messages[japan.getDate()%messages.length];
+
+/* LOVE COUNTER */
+
 let startDate=new Date("2024-08-26");
 let diff=Math.floor((japan-startDate)/(1000*60*60*24));
-loveCounter.innerText="Day "+diff+" ❤️";
 
-/* Tree */
+document.getElementById("loveCounter").innerText=
+"Day "+diff+" of loving you ❤️";
+
+/* TREE GROWTH */
+
 let months=(japan.getFullYear()-startDate.getFullYear())*12+
 (japan.getMonth()-startDate.getMonth());
 
 let leaves=document.getElementById("treeLeaves");
+
 if(months<1) leaves.innerHTML="🌱";
 else if(months<3) leaves.innerHTML="🌿";
 else if(months<6) leaves.innerHTML="🌸🌸";
 else leaves.innerHTML="🌸🌸🌸🌸";
+
+/* MESSAGE SYSTEM */
+
+function sendMessage(){
+
+let input=document.getElementById("msgInput");
+
+if(input.value.trim()==="") return;
+
+let msgs=JSON.parse(localStorage.getItem("msgs")||"[]");
+
+msgs.push(input.value);
+
+localStorage.setItem("msgs",JSON.stringify(msgs));
+
+input.value="";
+
+loadMessages();
+
+}
+
+function loadMessages(){
+
+let msgs=JSON.parse(localStorage.getItem("msgs")||"[]");
+
+let box=document.getElementById("messages");
+
+box.innerHTML="";
+
+msgs.forEach(m=>{
+let p=document.createElement("p");
+p.innerText="💌 "+m;
+box.appendChild(p);
+});
+
+}
+
+loadMessages();
 
 </script>
 
