@@ -29,7 +29,7 @@ align-items:center;
 z-index:9999;
 }
 
-/* FIX MOBILE BLOCK */
+/* TREE */
 #treeContainer{
 position:absolute;
 bottom:80px;
@@ -56,6 +56,7 @@ margin:auto;
 font-size:40px;
 }
 
+/* CARDS */
 .card{
 background:rgba(0,0,0,.75);
 padding:20px;
@@ -66,6 +67,7 @@ margin:20px auto;
 
 #letter{display:none;}
 
+/* INPUTS */
 input,textarea{
 font-size:16px;
 border-radius:10px;
@@ -83,18 +85,20 @@ cursor:pointer;
 margin:10px;
 }
 
-/* Chat */
+/* CHAT */
 .msg{
 padding:10px;
 border-radius:12px;
 margin:8px;
 max-width:70%;
 }
+
 .me{
 background:white;
 color:black;
 margin-left:auto;
 }
+
 .her{
 background:#ff4d6d;
 }
@@ -151,17 +155,30 @@ import { firebaseConfig } from './firebase-config.js';
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* SAVE NAME */
-const nameInput=document.getElementById("nameInput");
-nameInput.value=localStorage.getItem("name")||"";
-nameInput.addEventListener("input",()=>{
-localStorage.setItem("name",nameInput.value);
+/* NAME SYSTEM */
+const nameInput = document.getElementById("nameInput");
+let savedName = localStorage.getItem("name");
+
+if(savedName){
+  nameInput.value = savedName;
+  nameInput.disabled = true;
+  nameInput.style.opacity = "0.6";
+}
+
+/* First-time save */
+nameInput.addEventListener("change", () => {
+  if(nameInput.value.trim() !== ""){
+    localStorage.setItem("name", nameInput.value);
+    nameInput.disabled = true;
+    nameInput.style.opacity = "0.6";
+  }
 });
 
 /* SEND */
 window.sendMessage = async function(){
-let text=msgInput.value;
-let name=nameInput.value||"Anonymous";
+let text = msgInput.value;
+let name = localStorage.getItem("name") || "Anonymous";
+
 if(!text.trim()) return;
 
 await addDoc(collection(db,"messages"),{
@@ -184,14 +201,19 @@ snap.forEach(doc=>arr.push(doc.data()));
 arr.sort((a,b)=>(a.timestamp?.seconds||0)-(b.timestamp?.seconds||0));
 
 arr.forEach(d=>{
-let isMe=(d.name||"").toLowerCase().includes("tomi");
+let myNames=["tomiwa","tomi","adelusi"];
+let herNames=["tammy","tamilore"];
+
+let isMe=myNames.some(n=>(d.name||"").toLowerCase().includes(n));
+let isHer=herNames.some(n=>(d.name||"").toLowerCase().includes(n));
 
 box.innerHTML+=`
-<div class="msg ${isMe?'me':'her'}">
+<div class="msg ${isMe?'me':isHer?'her':''}">
 <strong>${d.name}</strong><br>
 ${d.message}
 </div>`;
 });
+
 box.scrollTop=box.scrollHeight;
 });
 </script>
@@ -206,12 +228,12 @@ return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
 /* CLOCK */
 function updateClock(){
 let time=new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
-document.getElementById("japanClock").innerText="Osaka Time 🇯🇵: "+time;
+japanClock.innerText="Osaka Time 🇯🇵: "+time;
 }
 setInterval(updateClock,1000);
 updateClock();
 
-/* ENTER (FIXED) */
+/* ENTER */
 function enterSite(){
 let p=prompt("Password");
 if(p!=="black"){alert("Wrong");return;}
@@ -223,20 +245,16 @@ let msg=`Happy Birthday.
 
 It’s crazy to think we met at school and two years ago we found love.
 
-Even with the break we had, we still found our way back to each other.
+Even with the break we had, we still found our way back.
 
 I love your personality, your stubborn but sweet nature, and your smile.
 
-One of my favorite memories was our karaoke.
-
-You are my moon in the darkest nights.
-
-I love you ❤️`;
+You are my moon 🌙❤️`;
 
 function toggleLetter(){
 let l=document.getElementById("letter");
 l.style.display=l.style.display==="block"?"none":"block";
-document.getElementById("letterText").innerText=msg;
+letterText.innerText=msg;
 }
 
 /* TIME MESSAGE */
@@ -247,40 +265,20 @@ let greeting=hour<12?"☀️ Good morning babe":
 hour<18?"🌤 Good afternoon babe":
 "🌙 Good night babe";
 
-document.getElementById("timeMessage").innerText=greeting;
+timeMessage.innerText=greeting;
 
 /* DAILY */
 const messages=[
-"You are my moon 🌙",
-"I love you more every day ❤️",
-"You make life better",
-"I miss you today",
-"Thinking about you",
-"You are my happiness",
-"My favorite person ❤️",
-"I can't wait to see you",
-"You are beautiful",
-"I love your smile",
-"You mean everything to me",
-"You make me happy",
-"I appreciate you",
-"You are special",
-"My heart is yours",
-"I cherish you",
-"You are amazing",
-"I adore you",
-"You complete me",
-"I love you endlessly ❤️"
+"You are my moon 🌙","I love you more every day ❤️",
+"You make life better","Thinking about you ❤️"
 ];
 
-document.getElementById("dailyMessage").innerText=
-messages[japan.getDate()%messages.length];
+dailyMessage.innerText=messages[japan.getDate()%messages.length];
 
 /* LOVE */
 let startDate=new Date("2024-08-26");
 let diff=Math.floor((japan-startDate)/(1000*60*60*24));
-document.getElementById("loveCounter").innerText=
-"Day "+diff+" of loving you ❤️";
+loveCounter.innerText="Day "+diff+" ❤️";
 
 /* TREE */
 let months=(japan.getFullYear()-startDate.getFullYear())*12+
