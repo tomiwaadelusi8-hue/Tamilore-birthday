@@ -23,12 +23,43 @@ height:8px;
 background:pink;
 border-radius:50%;
 animation:fall linear infinite;
+z-index:1;
 }
-@keyframes fall{to{transform:translateY(100vh);}}
+@keyframes fall{
+to{transform:translateY(100vh);}
+}
 
-/* Layout */
-.container{position:relative;z-index:2;}
+/* Entrance */
+#entrance{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:url("torii.jpg") center/cover no-repeat;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+z-index:9999;
+}
 
+/* Tree */
+#treeContainer{
+position:absolute;
+bottom:80px;
+left:50%;
+transform:translateX(-50%);
+pointer-events:none;
+z-index:0;
+}
+
+.container{
+position:relative;
+z-index:2;
+}
+
+/* Cards */
 .card{
 background:rgba(0,0,0,.75);
 padding:20px;
@@ -37,75 +68,104 @@ max-width:650px;
 margin:20px auto;
 }
 
-/* Chat */
-#messages{max-height:300px;overflow-y:auto;text-align:left;}
-.msg{padding:10px;border-radius:15px;margin:8px;max-width:70%;}
-.me{background:white;color:black;margin-left:auto;}
-.her{background:#ff4d6d;}
+#letter{display:none;}
 
+/* Chat */
+#messages{
+max-height:300px;
+overflow-y:auto;
+text-align:left;
+}
+
+.msg{
+padding:10px;
+border-radius:15px;
+margin:8px;
+max-width:70%;
+}
+
+.me{
+background:white;
+color:black;
+margin-left:auto;
+}
+
+.her{
+background:#ff4d6d;
+}
+
+/* Inputs */
 input,textarea{
-border:none;border-radius:10px;padding:10px;width:80%;font-size:16px;
+border:none;
+border-radius:10px;
+padding:10px;
+width:80%;
+font-size:16px;
 }
 
 button{
-padding:10px 20px;border:none;border-radius:10px;
-background:#ff4d6d;color:white;margin:5px;
-}
-
-/* Gallery */
-.gallery img{
-width:100px;
-margin:5px;
+padding:12px 25px;
+border:none;
 border-radius:10px;
+background:linear-gradient(45deg,#ff4d6d,#ffd700);
+font-weight:bold;
+cursor:pointer;
+margin:10px;
 }
 </style>
 </head>
 
 <body>
 
+<div id="treeContainer">
+<div style="width:20px;height:60px;background:#5c3b1e;margin:auto;"></div>
+<div id="treeLeaves" style="font-size:40px;"></div>
+</div>
+
+<div id="entrance">
+<h1>Welcome ❤️</h1>
+<button onclick="enterSite()">Enter</button>
+</div>
+
 <div class="container">
 
 <h1>Happy Birthday ❤️</h1>
 
-<!-- Letter -->
 <button onclick="toggleLetter()">Read My Letter</button>
-<div id="letter" class="card" style="display:none;">
+
+<div id="letter" class="card">
 <p id="letterText"></p>
 </div>
 
-<!-- Messages -->
+<div id="japanClock" class="card"></div>
+<div id="timeMessage" class="card"></div>
+<div id="dailyMessage" class="card"></div>
+<div id="loveCounter" class="card"></div>
+
 <h2>💌 Send Me a Message</h2>
 
 <input id="nameInput" placeholder="Your name">
 <br><br>
 
-<textarea id="msgInput" placeholder="Write something..."></textarea><br>
+<textarea id="msgInput" placeholder="Write something for me..."></textarea>
+<br>
 
 <button onclick="sendMessage()">Send ❤️</button>
-<button onclick="startRecording()">🎤 Voice</button>
 
 <div id="messages" class="card"></div>
 
-<!-- Gallery -->
-<h2>📸 Memories</h2>
-<div class="gallery">
-<img src="pic1.jpg">
-<img src="pic2.jpg">
-<img src="pic3.jpg">
 </div>
 
-</div>
-
-<!-- Firebase -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, addDoc, collection, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from './firebase-config.js';
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-/* AUTO SAVE NAME */
+/* SAVE NAME */
 const nameInput=document.getElementById("nameInput");
 nameInput.value=localStorage.getItem("name")||"";
 nameInput.addEventListener("input",()=>{
@@ -113,21 +173,25 @@ localStorage.setItem("name",nameInput.value);
 });
 
 /* SEND */
-window.sendMessage=async function(){
+window.sendMessage = async function(){
 let text=msgInput.value;
 let name=nameInput.value||"Anonymous";
-if(!text.trim())return;
+if(!text.trim()) return;
 
 await addDoc(collection(db,"messages"),{
-name,message:text,timestamp:serverTimestamp()
+name:name,
+message:text,
+timestamp:serverTimestamp()
 });
 
 msgInput.value="";
 };
 
-/* RECEIVE */
-onSnapshot(collection(db,"messages"),snap=>{
-messages.innerHTML="";
+/* RECEIVE (FIXED) */
+const box=document.getElementById("messages");
+
+onSnapshot(collection(db,"messages"), snap=>{
+box.innerHTML="";
 let arr=[];
 snap.forEach(doc=>arr.push(doc.data()));
 
@@ -135,24 +199,16 @@ arr.sort((a,b)=>(a.timestamp?.seconds||0)-(b.timestamp?.seconds||0));
 
 arr.forEach(d=>{
 let isMe=(d.name||"").toLowerCase().includes("tomi");
-messages.innerHTML+=`
+box.innerHTML+=`
 <div class="msg ${isMe?'me':'her'}">
 <strong>${d.name}</strong><br>${d.message}
 </div>`;
 });
+box.scrollTop=box.scrollHeight;
 });
 </script>
 
 <script>
-
-/* Letter */
-let msg=`Happy Birthday ❤️
-I love you so much.`;
-
-function toggleLetter(){
-letter.style.display=letter.style.display==="block"?"none":"block";
-letterText.innerText=msg;
-}
 
 /* Sakura */
 setInterval(()=>{
@@ -164,32 +220,67 @@ document.body.appendChild(p);
 setTimeout(()=>p.remove(),5000);
 },300);
 
-/* 🎤 Voice Recording */
-let mediaRecorder;
-let chunks=[];
-
-async function startRecording(){
-let stream=await navigator.mediaDevices.getUserMedia({audio:true});
-mediaRecorder=new MediaRecorder(stream);
-
-mediaRecorder.start();
-chunks=[];
-
-mediaRecorder.ondataavailable=e=>chunks.push(e.data);
-
-mediaRecorder.onstop=async ()=>{
-let blob=new Blob(chunks);
-let audioURL=URL.createObjectURL(blob);
-
-await addDoc(collection(db,"messages"),{
-name:nameInput.value||"Voice",
-message:`<audio controls src="${audioURL}"></audio>`,
-timestamp:new Date()
-});
-};
-
-setTimeout(()=>mediaRecorder.stop(),5000); // 5 sec recording
+/* Japan time */
+function getJapanDate(){
+return new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
 }
+
+/* Clock */
+function updateClock(){
+let time=new Date().toLocaleTimeString("en-US",{timeZone:"Asia/Tokyo"});
+japanClock.innerText="Osaka Time 🇯🇵: "+time;
+}
+setInterval(updateClock,1000);
+updateClock();
+
+/* Enter */
+function enterSite(){
+let p=prompt("Password");
+if(p!=="black"){alert("Wrong");return;}
+document.getElementById("entrance").remove();
+}
+
+/* Letter */
+let msg=`Happy Birthday ❤️
+
+I love you so much.
+You are my moon 🌙`;
+
+function toggleLetter(){
+letter.style.display=letter.style.display==="block"?"none":"block";
+letterText.innerText=msg;
+}
+
+/* Time greeting */
+let japan=getJapanDate();
+let hour=japan.getHours();
+let greeting=hour<12?"☀️ Good morning babe":
+hour<18?"🌤 Good afternoon babe":
+"🌙 Good night babe";
+timeMessage.innerText=greeting;
+
+/* Daily */
+const messages=[
+"You are my moon 🌙","I love you more every day ❤️",
+"You make life better","Thinking about you ❤️"
+];
+dailyMessage.innerText=messages[japan.getDate()%messages.length];
+
+/* Love counter */
+let startDate=new Date("2024-08-26");
+let diff=Math.floor((japan-startDate)/(1000*60*60*24));
+loveCounter.innerText="Day "+diff+" ❤️";
+
+/* Tree */
+let months=(japan.getFullYear()-startDate.getFullYear())*12+
+(japan.getMonth()-startDate.getMonth());
+
+let leaves=document.getElementById("treeLeaves");
+if(months<1) leaves.innerHTML="🌱";
+else if(months<3) leaves.innerHTML="🌿";
+else if(months<6) leaves.innerHTML="🌸🌸";
+else leaves.innerHTML="🌸🌸🌸🌸";
+
 </script>
 
 </body>
