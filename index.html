@@ -22,45 +22,12 @@ width:8px;
 height:8px;
 background:pink;
 border-radius:50%;
-opacity:0.7;
 animation:fall linear infinite;
-z-index:1;
 }
-@keyframes fall{
-to{transform:translateY(100vh);}
-}
-
-/* Entrance */
-#entrance{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:url("torii.jpg") center/cover no-repeat;
-display:flex;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:9999;
-}
-
-/* Tree */
-#treeContainer{
-position:absolute;
-bottom:80px;
-left:50%;
-transform:translateX(-50%) scale(0.8);
-pointer-events:none;
-z-index:0;
-transition:1s;
-}
+@keyframes fall{to{transform:translateY(100vh);}}
 
 /* Layout */
-.container{
-position:relative;
-z-index:2;
-}
+.container{position:relative;z-index:2;}
 
 .card{
 background:rgba(0,0,0,.75);
@@ -71,74 +38,61 @@ margin:20px auto;
 }
 
 /* Chat */
-#messages{
-max-height:300px;
-overflow-y:auto;
-text-align:left;
-}
+#messages{max-height:300px;overflow-y:auto;text-align:left;}
+.msg{padding:10px;border-radius:15px;margin:8px;max-width:70%;}
+.me{background:white;color:black;margin-left:auto;}
+.her{background:#ff4d6d;}
 
-.msg{
-padding:10px 14px;
-border-radius:20px;
-margin:8px;
-max-width:70%;
-}
-
-.me{
-background:white;
-color:black;
-margin-left:auto;
-}
-
-.her{
-background:#ff4d6d;
-}
-
-/* Inputs */
 input,textarea{
-border:none;
-border-radius:10px;
-padding:10px;
-width:80%;
-font-size:16px;
+border:none;border-radius:10px;padding:10px;width:80%;font-size:16px;
 }
 
 button{
-padding:12px 25px;
-border:none;
+padding:10px 20px;border:none;border-radius:10px;
+background:#ff4d6d;color:white;margin:5px;
+}
+
+/* Gallery */
+.gallery img{
+width:100px;
+margin:5px;
 border-radius:10px;
-background:linear-gradient(45deg,#ff4d6d,#ffd700);
-font-weight:bold;
-cursor:pointer;
-margin:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="treeContainer">
-<div id="treeLeaves" style="font-size:50px;">🌱</div>
-</div>
-
-<div id="entrance">
-<h1>Welcome ❤️</h1>
-<button onclick="enterSite()">Enter</button>
-</div>
-
 <div class="container">
 
 <h1>Happy Birthday ❤️</h1>
 
+<!-- Letter -->
+<button onclick="toggleLetter()">Read My Letter</button>
+<div id="letter" class="card" style="display:none;">
+<p id="letterText"></p>
+</div>
+
+<!-- Messages -->
+<h2>💌 Send Me a Message</h2>
+
 <input id="nameInput" placeholder="Your name">
 <br><br>
 
-<textarea id="msgInput" placeholder="Write something..."></textarea>
-<br>
+<textarea id="msgInput" placeholder="Write something..."></textarea><br>
 
 <button onclick="sendMessage()">Send ❤️</button>
+<button onclick="startRecording()">🎤 Voice</button>
 
 <div id="messages" class="card"></div>
+
+<!-- Gallery -->
+<h2>📸 Memories</h2>
+<div class="gallery">
+<img src="pic1.jpg">
+<img src="pic2.jpg">
+<img src="pic3.jpg">
+</div>
 
 </div>
 
@@ -148,93 +102,94 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, addDoc, collection, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from './firebase-config.js';
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+/* AUTO SAVE NAME */
+const nameInput=document.getElementById("nameInput");
+nameInput.value=localStorage.getItem("name")||"";
+nameInput.addEventListener("input",()=>{
+localStorage.setItem("name",nameInput.value);
+});
 
 /* SEND */
-window.sendMessage = async function(){
-let text=document.getElementById("msgInput").value;
-let name=document.getElementById("nameInput").value || "Anonymous";
-
-if(text.trim()==="") return;
+window.sendMessage=async function(){
+let text=msgInput.value;
+let name=nameInput.value||"Anonymous";
+if(!text.trim())return;
 
 await addDoc(collection(db,"messages"),{
-name:name,
-message:text,
-timestamp:serverTimestamp()
+name,message:text,timestamp:serverTimestamp()
 });
 
-document.getElementById("msgInput").value="";
+msgInput.value="";
 };
 
-/* RECEIVE (FIXED) */
-const box=document.getElementById("messages");
+/* RECEIVE */
+onSnapshot(collection(db,"messages"),snap=>{
+messages.innerHTML="";
+let arr=[];
+snap.forEach(doc=>arr.push(doc.data()));
 
-onSnapshot(collection(db,"messages"), (snapshot)=>{
-box.innerHTML="";
+arr.sort((a,b)=>(a.timestamp?.seconds||0)-(b.timestamp?.seconds||0));
 
-let msgs=[];
-
-snapshot.forEach(doc=>{
-msgs.push(doc.data());
-});
-
-/* FIX SORT */
-msgs.sort((a,b)=>{
-return (a.timestamp?.seconds||0)-(b.timestamp?.seconds||0);
-});
-
-msgs.forEach(data=>{
-let myNames=["tomiwa","tomi","adelusi"];
-let isMe=myNames.some(n=>(data.name||"").toLowerCase().includes(n));
-
-box.innerHTML+=`
+arr.forEach(d=>{
+let isMe=(d.name||"").toLowerCase().includes("tomi");
+messages.innerHTML+=`
 <div class="msg ${isMe?'me':'her'}">
-<strong>${data.name||"Anon"}</strong><br>
-${data.message}
+<strong>${d.name}</strong><br>${d.message}
 </div>`;
 });
-
-box.scrollTop=box.scrollHeight;
 });
 </script>
 
 <script>
 
+/* Letter */
+let msg=`Happy Birthday ❤️
+I love you so much.`;
+
+function toggleLetter(){
+letter.style.display=letter.style.display==="block"?"none":"block";
+letterText.innerText=msg;
+}
+
 /* Sakura */
-function petal(){
+setInterval(()=>{
 let p=document.createElement("div");
 p.className="sakura";
 p.style.left=Math.random()*100+"vw";
 p.style.animationDuration=(Math.random()*3+2)+"s";
 document.body.appendChild(p);
 setTimeout(()=>p.remove(),5000);
+},300);
+
+/* 🎤 Voice Recording */
+let mediaRecorder;
+let chunks=[];
+
+async function startRecording(){
+let stream=await navigator.mediaDevices.getUserMedia({audio:true});
+mediaRecorder=new MediaRecorder(stream);
+
+mediaRecorder.start();
+chunks=[];
+
+mediaRecorder.ondataavailable=e=>chunks.push(e.data);
+
+mediaRecorder.onstop=async ()=>{
+let blob=new Blob(chunks);
+let audioURL=URL.createObjectURL(blob);
+
+await addDoc(collection(db,"messages"),{
+name:nameInput.value||"Voice",
+message:`<audio controls src="${audioURL}"></audio>`,
+timestamp:new Date()
+});
+};
+
+setTimeout(()=>mediaRecorder.stop(),5000); // 5 sec recording
 }
-setInterval(petal,300);
-
-/* Enter */
-function enterSite(){
-let p=prompt("Password");
-if(p!=="black"){alert("Wrong");return;}
-document.getElementById("entrance").remove();
-}
-
-/* Tree growth */
-let japan=new Date(new Date().toLocaleString("en-US",{timeZone:"Asia/Tokyo"}));
-let start=new Date("2024-08-26");
-
-let months=(japan.getFullYear()-start.getFullYear())*12+
-(japan.getMonth()-start.getMonth());
-
-let tree=document.getElementById("treeContainer");
-tree.style.transform=`translateX(-50%) scale(${0.8+months*0.05})`;
-
-let leaves=document.getElementById("treeLeaves");
-if(months<1) leaves.innerHTML="🌱";
-else if(months<3) leaves.innerHTML="🌿";
-else if(months<6) leaves.innerHTML="🌸🌸";
-else leaves.innerHTML="🌸🌸🌸🌸";
-
 </script>
 
 </body>
